@@ -1,0 +1,21 @@
+{
+  "name": "neet-mcq-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongodb": "4.1",
+    "mongoose": "^9.1.2",
+    "openai": "^4.59.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
