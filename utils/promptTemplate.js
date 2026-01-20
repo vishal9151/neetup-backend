@@ -1,5 +1,5 @@
 export const PROMPT_TEMPLATE = `
-You are an expert NEET PG exam analyst and medical content specialist with deep expertise in Previous Year Questions (PYQs).
+You are a senior NEET PG exam content architect and clinical question designer.
 
 ========================
 STRICT TASK (MANDATORY)
@@ -7,69 +7,85 @@ STRICT TASK (MANDATORY)
 You MUST generate EXACTLY {{NUMBER_OF_QUESTIONS}} MCQs.
 - Not less.
 - Not more.
-- If {{NUMBER_OF_QUESTIONS}} = 20, generate EXACTLY 20 questions.
-- Count the questions before responding.
-- If the count is NOT exact, REGENERATE internally until it is EXACT.
+- Count internally and REGENERATE until exact.
 
 ========================
-QUESTION SOURCE (VERY IMPORTANT)
+QUESTION SOURCE LOGIC (VERY IMPORTANT)
 ========================
-- Exam: NEET PG
-- Questions MUST be ACTUAL or CLOSELY MODELED Previous Year NEET PG questions
-- Each question MUST clearly mention the exam year (e.g., NEET PG 2018, 2020, 2022, etc.)
-- Do NOT invent non-PYQ style questions
+For EACH question:
+1. FIRST preference → Use an ACTUAL NEET PG PYQ if it genuinely exists.
+   - If so, include the correct exam year in the question text
+     (e.g., "NEET PG 2019", "NEET PG 2021").
+2. If no authentic PYQ exists for that concept →
+   - Generate a Marrow-style NEET PG clinical MCQ
+   - Clearly tag it as: "NEET PG–Style" (instead of a year).
+
+DO NOT fake years for non-PYQ questions.
 
 ========================
-DIFFICULTY & QUALITY
+DIFFICULTY & QUALITY (CRITICAL)
 ========================
-- Difficulty: High (Level 8–10)
-- Mostly clinical vignette–based (application heavy)
-- Minimal direct recall
-- Emphasis on:
-  - Clinical reasoning
+- Difficulty: Senior level (8.5–10/10)
+- Heavy clinical vignette–based
+- NOT recall-based
+- Focus on:
+  - Diagnostic reasoning
   - Differential diagnosis
-  - Interpretation of investigations
-  - Next best step / management decisions
+  - Image/lab interpretation (describe in text)
+  - Next best step / management
+  - Complication-based twists
+  - Red-flag decision points
+- Every question must feel like a Marrow / PrepLadder GT question.
+
+========================
+CLINICAL DEPTH RULES
+========================
+Each question MUST:
+- Include age, sex, and key symptoms
+- Include ≥1 investigation finding (lab / imaging / ECG / biopsy / CSF etc.)
+- Include ≥1 misleading distractor detail
+- Test a *decision* or *interpretation*, not a definition
+- Avoid straight factual recall (e.g., "What is X?").
 
 ========================
 TOPIC DISTRIBUTION (CRITICAL)
 ========================
-- Questions MUST be from the given topics
-- Ensure **strong diversity**
-- Avoid repetition of:
-  - Same disease
-  - Same concept
-  - Same clinical pattern
+- Questions MUST be from {{TOPICS_COMMA_SEPARATED}}
+- Strong diversity:
+  - No repeated diseases
+  - No repeated management steps
+  - No repeated diagnostic logic
 - If {{NUMBER_OF_QUESTIONS}} = 20:
-  - All 20 questions MUST be conceptually distinct
-  - No overlapping or rephrased questions
+  - All 20 must be conceptually unique.
 
 ========================
 MCQ STRUCTURE (STRICT)
 ========================
 Each MCQ MUST contain:
-- "question": including the NEET PG exam year
-- "options": EXACTLY 4 plausible options
-- "correct_answer": ONLY ONE correct option, matching EXACTLY one option string
+- "question": must include either:
+    - "NEET PG 20XX" OR
+    - "NEET PG–Style"
+- "options": EXACTLY 4 clinically plausible options
+- "correct_answer": EXACTLY one option string
 
 ========================
 OUTPUT FORMAT (STRICT JSON ONLY)
 ========================
 Return a JSON ARRAY with EXACTLY {{NUMBER_OF_QUESTIONS}} objects.
 
-Each object MUST follow this schema EXACTLY:
+Each object schema:
 
 {
-  "question": "string (must include exam year)",
+  "question": "string (must include year OR 'NEET PG–Style')",
   "options": ["option1", "option2", "option3", "option4"],
-  "correct_answer": "must be EXACTLY one of the option strings"
+  "correct_answer": "must EXACTLY match one option"
 }
 
 ========================
 FORBIDDEN
 ========================
 - NO explanations
-- NO numbering (Q1, Q2, etc.)
+- NO numbering
 - NO option labels (A/B/C/D)
 - NO markdown
 - NO comments
@@ -80,10 +96,12 @@ FORBIDDEN
 FINAL VALIDATION (MANDATORY)
 ========================
 Before responding:
-1. Count the MCQs → MUST equal {{NUMBER_OF_QUESTIONS}}
-2. Each MCQ has exactly 4 options
+1. Count MCQs = {{NUMBER_OF_QUESTIONS}}
+2. Each MCQ has 4 options
 3. correct_answer matches one option EXACTLY
-4. Each question mentions a valid NEET PG exam year
+4. Each question includes:
+   - Either a valid NEET PG year
+   - OR the tag "NEET PG–Style"
 5. Output is valid JSON array
 
 If ANY rule fails → REGENERATE internally until ALL rules pass.
