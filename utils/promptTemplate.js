@@ -45,7 +45,7 @@ Each question MUST:
 - Include ≥1 investigation finding (lab / imaging / ECG / biopsy / CSF etc.)
 - Include ≥1 misleading distractor detail
 - Test a *decision* or *interpretation*, not a definition
-- Avoid straight factual recall (e.g., "What is X?").
+- Avoid straight factual recall.
 
 ========================
 TOPIC DISTRIBUTION (CRITICAL)
@@ -59,31 +59,48 @@ TOPIC DISTRIBUTION (CRITICAL)
   - All 20 must be conceptually unique.
 
 ========================
+TOPIC BOUNDARY RULE (ZERO TOLERANCE)
+========================
+Each question MUST be STRICTLY and DIRECTLY from ONE of the input topics.
+
+- DO NOT mix multiple topics in a single question.
+- DO NOT introduce diseases, systems, or concepts outside the given topics.
+- If a topic is "Renal failure":
+    - ALL questions must be nephrology-focused.
+    - NO cardiology, neurology, pulmonology, or chest pain unless it is a DIRECT renal complication.
+- If a topic is "Murmur":
+    - ALL questions must be auscultation / valvular / hemodynamic based.
+- If a topic is unclear, non-medical, or not a valid NEET PG subject:
+    - DO NOT hallucinate random medicine questions.
+    - Restrict to the closest valid NEET PG discipline only.
+
+If ANY generated question does not clearly belong to one of the input topics → REJECT and REGENERATE internally.
+
+========================
+ANTI-DRIFT RULE (VERY IMPORTANT)
+========================
+The model MUST NOT default to common cardiology / chest pain / myocardial infarction scenarios
+unless "Cardiology", "IHD", "ACS", "Arrhythmia", or similar cardiac topics are explicitly provided.
+
+Chest pain, MI, ECG ischemic changes, troponin, arrhythmia are FORBIDDEN unless the topic is cardiac.
+
+========================
 MCQ STRUCTURE (STRICT)
 ========================
 Each MCQ MUST contain:
-- "question": must include either:
-    - "NEET PG 20XX" OR
-    - "NEET PG–Style"
-- "options": EXACTLY 4 clinically plausible options
-- "correct_answer": EXACTLY one option string
+
+{
+  "topic": "must be EXACTLY one of {{TOPICS_COMMA_SEPARATED}}",
+  "question": "string (must include either a valid NEET PG year OR the tag 'NEET PG–Style')",
+  "options": ["option1", "option2", "option3", "option4"],
+  "correct_answer": "must EXACTLY match one option"
+}
 
 ========================
 OUTPUT FORMAT (STRICT JSON ONLY)
 ========================
 Return a JSON ARRAY with EXACTLY {{NUMBER_OF_QUESTIONS}} objects.
 
-Each object schema:
-
-{
-  "question": "string (must include year OR 'NEET PG–Style')",
-  "options": ["option1", "option2", "option3", "option4"],
-  "correct_answer": "must EXACTLY match one option"
-}
-
-========================
-FORBIDDEN
-========================
 - NO explanations
 - NO numbering
 - NO option labels (A/B/C/D)
@@ -97,12 +114,14 @@ FINAL VALIDATION (MANDATORY)
 ========================
 Before responding:
 1. Count MCQs = {{NUMBER_OF_QUESTIONS}}
-2. Each MCQ has 4 options
+2. Each MCQ has exactly 4 options
 3. correct_answer matches one option EXACTLY
 4. Each question includes:
    - Either a valid NEET PG year
    - OR the tag "NEET PG–Style"
-5. Output is valid JSON array
+5. Each question has a valid "topic" from the input list
+6. Output is valid JSON array
+7. NO topic drift occurred
 
 If ANY rule fails → REGENERATE internally until ALL rules pass.
 
