@@ -24,6 +24,8 @@ export const processQuestionJob = async (jobId) => {
       messages: [{ role: "user", content: prompt }]
     });
 
+    console.log(completion);
+
     const result = JSON.parse(
       completion.choices[0].message.content
     );
